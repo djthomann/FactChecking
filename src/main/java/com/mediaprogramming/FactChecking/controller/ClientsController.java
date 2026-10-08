@@ -32,7 +32,7 @@ public class ClientsController {
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) throws URISyntaxException {
         Client savedClient = clientRepository.save(client);
-        return ResponseEntity.created(new URI("/clients/" + savedClient.getId())).body(savedClient);
+        return ResponseEntity.created(new URI("/api/clients/" + savedClient.getId())).body(savedClient);
     }
 
     @PutMapping("/{id}")

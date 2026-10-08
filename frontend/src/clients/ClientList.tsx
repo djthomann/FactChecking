@@ -5,8 +5,6 @@ import type {Client} from "../types/Client.ts";
 const fetchClients = async (): Promise<Client[]> => {
     const response = await axios.get<Client[]>('/api/clients');
 
-    console.log(response.data)
-
     return response.data;
 };
 
