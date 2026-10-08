@@ -18,12 +18,12 @@ export function ClientList() {
     if (isError) return <p style={{ color: 'red' }}>Fehler: {error.message}</p>;
 
     return (
-        <div>
-            <h2>Client-Liste</h2>
+        <div className="client-list">
+            <h3>Der große Klientenzeiger</h3>
             <ul>
                 {clients.map((client) => (
                     <li key={client.id}>
-                        {client.name} ({client.email})
+                        ID: {client.id} Name: {client.name} Mail: {client.email}
                     </li>
                 ))}
             </ul>

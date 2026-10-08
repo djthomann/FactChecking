@@ -39,11 +39,10 @@ function ClientForm() {
             name: nameData,
             email: emailData,
         })
-
-
     }
 
     return <form className="client-form" onSubmit={handleSubmit}>
+        <h3>Der große Klientenschöpfer</h3>
         <div>
             <label>Name</label>
             <input name="name"></input>
