@@ -3,6 +3,7 @@ import axios from 'axios';
 import type {Client} from "../types/Client.ts";
 import "./Clients.css"
 import type {SubmitEvent} from "react";
+import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 
 const createClient = async (newClient: Omit<Client, 'id'>): Promise<Client> => {
     const response = await axios.post<Client>('/api/clients', newClient);
@@ -41,18 +42,32 @@ function ClientForm() {
         })
     }
 
-    return <form className="client-form" onSubmit={handleSubmit}>
+    return (
+    <Form onSubmit={handleSubmit} className="p-4 border rounded bg-light">
         <h3>Der große Klientenschöpfer</h3>
-        <div>
-            <label>Name</label>
-            <input name="name"></input>
-        </div>
-        <div>
-            <label>E-Mail</label>
-            <input name="email"></input>
-        </div>
-        <button type="submit">Submit</button>
-    </form>
+        <FormGroup>
+            <Label for="name">Name</Label>
+            <Input 
+                id="name"
+                name="name"
+                placeholder="Max Mustermann"
+                type="text"
+            />
+        </FormGroup>
+        <FormGroup>
+            <Label for="email">E-Mail</Label>
+            <Input 
+                id="email"
+                name="email"
+                placeholder="max@mustermann.de"
+                type="email"
+            />
+        </FormGroup>
+        <FormGroup>
+            <Button color="primary">Erschaffen</Button>
+        </FormGroup>
+    </Form>
+    );
 }
 
 export default ClientForm
