@@ -25,7 +25,7 @@ public class ClaimController {
     }
 
     @GetMapping("/{id}")
-    public Claim getById(@RequestBody Long id) {
+    public Claim getById(@PathVariable Long id) {
         return repository.findById(id).orElseThrow();
     }
 
