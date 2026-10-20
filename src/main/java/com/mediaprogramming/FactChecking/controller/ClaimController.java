@@ -47,6 +47,7 @@ public class ClaimController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Claim not found"));
 
         claim.setStatus(newStatus);
+
         return repository.save(claim);
     }
 }
