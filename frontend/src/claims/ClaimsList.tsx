@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import type {Claim} from "../types/Claim.ts";
+import { ClaimStatus, type Claim} from "../types/Claim.ts";
 import { Badge, Button, Card, CardBody, CardHeader, ListGroup, ListGroupItem } from 'reactstrap';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -68,7 +68,9 @@ export function ClaimsList() {
               <span className="fw-semibold">{claim.name}</span>
             </Link>
 
-            <Button
+            <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} className="border">{claim.status}</Badge>
+
+            {/*<Button
               color="outline-danger"
               size="sm"
               className="position-relative"
@@ -76,7 +78,7 @@ export function ClaimsList() {
               onClick={() => deleteClaimQuery.mutate(claim.id)}
             >
               <i className="bi bi-trash" />
-            </Button>
+            </Button>*/}
           </ListGroupItem>
         ))}
       </ListGroup>
