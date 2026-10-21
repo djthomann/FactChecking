@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ClaimStatus, type Claim} from "../types/Claim.ts";
-import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
+import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, InputGroup, InputGroupText, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,12 +12,11 @@ const fetchClaims = async (): Promise<Claim[]> => {
     return response.data;
 };
 
-
-
 export function ClaimsList() {
 
     const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
+    const [query, setQuery] = useState("");
 
     const { data: claims, isPending, isError, error } = useQuery({
         queryKey: ['claims'],
@@ -27,10 +26,17 @@ export function ClaimsList() {
     const filteredClaims = useMemo(() => {
       if (!claims) return [];
 
+      const normalizedQuery = query.trim().toLowerCase();
+
       return claims.filter((claim) => {
-        return !status || claim.status === status;
+          const matchesStatus = !status || claim.status === status;
+          const matchesQuery =
+              !normalizedQuery || claim.name.toLowerCase().includes(normalizedQuery);
+
+          return matchesStatus && matchesQuery;
       });
-    }, [claims, status]);
+
+    }, [claims, query, status]);
 
     if (isPending) return <p>Loading Claims...</p>;
     if (isError) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
@@ -50,6 +56,10 @@ export function ClaimsList() {
       setStatus(isClaimStatus(value) ? value : "");
     }
 
+    function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
+      setQuery(e.target.value);
+    }
+
     const STATUS_LABELS: Record<ClaimStatus, string> = {
       VERIFIED: "Verified",
       UNVERIFIED: "Not Verified",
@@ -62,7 +72,7 @@ export function ClaimsList() {
     <h4 className="mb-0">Claims</h4>
     <div className="d-flex gap-2">
       <button onClick={() => {toggleFilters()}} type="button" className="btn p-0 border-0 shadow-none" aria-label="Filter">
-        <i className={`bi ${showFilterOptions ? "bi-funnel-fill" : "bi-funnel"}`}></i>
+        <i className={`bi ${showFilterOptions ? "bi-chevron-down" : "bi-chevron-up"}`}></i>
       </button>
       <Badge color="secondary" pill>
           {filteredClaims.length}
@@ -73,9 +83,22 @@ export function ClaimsList() {
     <Collapse isOpen={showFilterOptions}>
       <div className="border-bottom bg-light px-3 py-2">
         <Row className="g-2">
-          {/*<Col md="4">
-            <Input type="text" placeholder="Suche..." bsSize="sm" />
-          </Col>*/}
+          <Col md="4">
+            <Label for="search">Search</Label>
+            <div className="position-relative">
+                <i
+                    className="bi bi-search position-absolute top-50 translate-middle-y text-muted"
+                    style={{ left: 10, fontSize: 14, pointerEvents: "none" }}
+                />
+                <Input
+                    id="search"
+                    type="text"
+                    bsSize="sm"
+                    style={{ paddingLeft: 32 }}
+                    onChange={handleQueryChange}
+                />
+            </div>
+        </Col>
           <Col md="4">
             <Label>Status</Label>
             <Input
