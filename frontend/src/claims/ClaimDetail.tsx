@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type Claim, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
 import {Link, useNavigate, useParams } from 'react-router-dom';
-import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Row, Spinner} from "reactstrap";
+import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
 
 const fetchClaim = async (id: number): Promise<Claim> => {
