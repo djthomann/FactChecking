@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type Claim, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams } from 'react-router-dom';
 import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Row, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
 
@@ -24,8 +24,14 @@ const patchClaimUrl = async (id: number, url: string): Promise<Claim> => {
   return response.data;
 };
 
+const deleteClaim = async(id: number) => {
+    const response = await axios.delete<Claim>(`/api/claims/${id}`);
+    return response.data;
+}
+
 function ClaimDetail() {
 
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const claimId = Number(id);
 
@@ -64,6 +70,17 @@ function ClaimDetail() {
         }
     });
 
+    const deleteClaimQuery = useMutation({
+        mutationFn: deleteClaim,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['claims']
+            });
+
+            navigate('/claims');
+        },
+    })
+
     if (isPending) {
         return <div className="text-center p-4 text-muted">Lade Claim...</div>;
     }
@@ -100,51 +117,70 @@ function ClaimDetail() {
 
                 </CardHeader>
                 <CardBody className="d-flex gap-3 align-items-end">
-                    <Col>
-                    <FormGroup className="flex-grow-1 mb-0">
-                        <Label for={`claim-url-${claim.id}`} className="small mb-1">
-                        URL
-                        </Label>
-                        <InputGroup size="sm">
-                        <Input
-                            id={`claim-url-${claim.id}`}
-                            type="url"
-                            invalid={urlError}
-                            placeholder="https://..."
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            onKeyDown={(e) => {
-                            if (e.key === "Enter" && isUrlChanged) handleSaveUrl();
-                            }}
-                            disabled={isUpdating}
-                        />
-                        {urlError && (
-                            <FormFeedback tooltip>
-                                Not a valid URL!
-                            </FormFeedback>
-                        )}
-                        <Button
-                            color="primary"
-                            outline
-                            onClick={handleSaveUrl}
-                            aria-label="URL speichern"
-                        >
-                            <i className="bi bi-check-lg"></i>
-                        </Button>
-                        </InputGroup>
-                        
-                    </FormGroup>
+                    <Col xs={12}>
+                        <div className="d-flex flex-column gap-3">
+                            {/* URL-Bereich */}
+                            <FormGroup className="mb-0">
+                                <Label for={`claim-url-${claim.id}`} className="small fw-semibold mb-1">
+                                    URL
+                                </Label>
+                                <InputGroup size="sm" className="has-validation">
+                                    <Input
+                                        id={`claim-url-${claim.id}`}
+                                        type="url"
+                                        invalid={urlError}
+                                        placeholder="https://..."
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && isUrlChanged) handleSaveUrl();
+                                        }}
+                                        disabled={isUpdating}
+                                    />
+                                    <Button
+                                        color="primary"
+                                        outline
+                                        onClick={handleSaveUrl}
+                                        disabled={!isUrlChanged || isUpdating}
+                                        aria-label="URL speichern"
+                                    >
+                                        <i className="bi bi-check-lg"></i>
+                                    </Button>
+                                    
+                                    {urlError && (
+                                        <FormFeedback tooltip>
+                                            Bitte gib eine gültige URL ein!
+                                        </FormFeedback>
+                                    )}
+                                </InputGroup>
+                            </FormGroup>
 
-                    <Button
-                            color={claim.status === ClaimStatus.UNVERIFIED ? "primary" : "warning"}
-                            onClick={handleToggleStatus}
-                            disabled={isUpdating}
-                        >
-                            {isUpdating && <Spinner size="sm" className="me-2" />}
-                            {claim.status === ClaimStatus.UNVERIFIED ? "Verify" : "Unverify"}
-                        </Button>
+                            {/* Aktions-Buttons (Verify & Löschen) */}
+                            <div className="d-flex align-items-center gap-4">
+                                <Button
+                                    color={claim.status === ClaimStatus.UNVERIFIED ? "primary" : "warning"}
+                                    onClick={handleToggleStatus}
+                                    disabled={isUpdating}
+                                    size="sm"
+                                    className="flex-grow-1"
+                                >
+                                    {isUpdating && <Spinner size="sm" className="me-2" />}
+                                    {claim.status === ClaimStatus.UNVERIFIED ? "Verify" : "Unverify"}
+                                </Button>
+
+                                <Button
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => deleteClaimQuery.mutate(claim.id)}
+                                    disabled={deleteClaimQuery.isPending}
+                                    title="Claim löschen"
+                                    className="flex-grow-1"
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        </div>
                     </Col>
-
 
                 </CardBody>
             </Card>) : (

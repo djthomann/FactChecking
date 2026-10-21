@@ -62,4 +62,11 @@ public class ClaimController {
 
         return repository.save(claim);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Claim> deleteClaim(@PathVariable Long id) {
+        repository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
