@@ -5,6 +5,10 @@ export interface Claim {
     status: ClaimStatus;
 }
 
+export interface CreateClaimRequest {
+    name: string
+}
+
 export const ClaimStatus = {
     VERIFIED: 'VERIFIED',
     UNVERIFIED: 'UNVERIFIED',
