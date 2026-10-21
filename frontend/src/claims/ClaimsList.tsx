@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ClaimStatus, type Claim} from "../types/Claim.ts";
-import { Badge, Button, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
+import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,17 +12,12 @@ const fetchClaims = async (): Promise<Claim[]> => {
     return response.data;
 };
 
-const deleteClaim = async(id: number) => {
-    const response = await axios.delete<Claim>(`/api/claims/${id}`);
-    return response.data;
-}
+
 
 export function ClaimsList() {
 
     const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
-
-    const queryClient = useQueryClient()
 
     const { data: claims, isPending, isError, error } = useQuery({
         queryKey: ['claims'],
@@ -36,17 +31,6 @@ export function ClaimsList() {
         return !status || claim.status === status;
       });
     }, [claims, status]);
-
-    const deleteClaimQuery = useMutation({
-            mutationFn: deleteClaim,
-            onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ['claims']
-                });
-            },
-        })
-
-    const [selectedId, setSelectedId] = useState<number | null>(null);
 
     if (isPending) return <p>Loading Claims...</p>;
     if (isError) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
@@ -133,16 +117,6 @@ export function ClaimsList() {
             </Link>
 
             <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} className="border">{claim.status}</Badge>
-
-            {/*<Button
-              color="outline-danger"
-              size="sm"
-              className="position-relative"
-              style={{ zIndex: 2 }}
-              onClick={() => deleteClaimQuery.mutate(claim.id)}
-            >
-              <i className="bi bi-trash" />
-            </Button>*/}
           </ListGroupItem>
         ))}
       </ListGroup>
