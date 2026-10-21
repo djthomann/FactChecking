@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import ClaimOverviewPage from './pages/ClaimOverviewPage'
 import ClaimDetailPage from './pages/ClaimDetailPage'
-import { Navbar } from 'reactstrap'
 import ClaimNavbar from './components/ClaimNavbar'
 
 function App() {
