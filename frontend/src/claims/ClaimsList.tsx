@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ClaimStatus, type Claim} from "../types/Claim.ts";
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
 
@@ -25,6 +25,12 @@ export function ClaimsList() {
         queryKey: ['claims'],
         queryFn: fetchClaims,
     });
+
+    useEffect(() => {
+            if (claims?.length === 0) {
+                setShowFilterOptions(false)
+            }
+        }, [claims]);
 
     const filteredClaims = useMemo(() => {
       if (!claims) return [];
@@ -72,7 +78,7 @@ export function ClaimsList() {
         
     <Card className="shadow-sm">
     <CardHeader className="d-flex justify-content-between align-items-center">
-    <h4 className="mb-0">Claims</h4>
+    <h4 className="mb-0">Browse all claims</h4>
     <div className="d-flex gap-2">
       <button onClick={() => {toggleFilters()}} type="button" className="btn p-0 border-0 shadow-none" aria-label="Filter">
         <i className={`bi ${showFilterOptions ? "bi-chevron-up" : "bi-chevron-down"}`}></i>

@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type Claim, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
-import {useNavigate, useParams } from 'react-router-dom';
+import {Link, useNavigate, useParams } from 'react-router-dom';
 import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Row, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
 
@@ -109,12 +109,21 @@ function ClaimDetail() {
             <Card className="shadow-sm">
                 <CardHeader className="d-flex justify-content-between align-items-center gap-4">
                     <div className="d-flex align-items-center gap-4">
-                        <Badge color="light" className="text-dark border">#{id}</Badge>
+                        <div className="d-flex align-items-center gap-2">
+                            <Button 
+                                tag={Link} 
+                                to="/" 
+                                color="link" 
+                                className="p-0 border-0 shadow-none text-decoration-none text-body" 
+                                aria-label="Filter"
+                            >
+                                <i className="bi-chevron-left fs-4"></i>
+                            </Button>
+                            <Badge color="light" className="text-dark border">#{id}</Badge>
+                        </div>
                         <h4 className="mb-0">{claim?.name}</h4>
                     </div>
-                    <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"}
-                           className="border">{claim.status}</Badge>
-
+                    <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} className="border">{claim.status}</Badge>
                 </CardHeader>
                 <CardBody className="d-flex gap-3 align-items-end">
                     <Col xs={12}>
@@ -139,17 +148,15 @@ function ClaimDetail() {
                                     />
                                     <Button
                                         color="primary"
-                                        outline
                                         onClick={handleSaveUrl}
                                         disabled={!isUrlChanged || isUpdating}
-                                        aria-label="URL speichern"
                                     >
                                         <i className="bi bi-check-lg"></i>
                                     </Button>
                                     
                                     {urlError && (
                                         <FormFeedback tooltip>
-                                            Bitte gib eine gültige URL ein!
+                                            Please enter a valid URL
                                         </FormFeedback>
                                     )}
                                 </InputGroup>
@@ -162,7 +169,7 @@ function ClaimDetail() {
                                     onClick={handleToggleStatus}
                                     disabled={isUpdating}
                                     size="sm"
-                                    className="flex-grow-1"
+                                    style={{flex: 1}}
                                 >
                                     {isUpdating && <Spinner size="sm" className="me-2" />}
                                     {claim.status === ClaimStatus.UNVERIFIED ? "Verify" : "Unverify"}
@@ -174,7 +181,7 @@ function ClaimDetail() {
                                     onClick={() => deleteClaimQuery.mutate(claim.id)}
                                     disabled={deleteClaimQuery.isPending}
                                     title="Claim löschen"
-                                    className="flex-grow-1"
+                                    style={{flex: 1}}
                                 >
                                     Delete
                                 </Button>
