@@ -2,7 +2,8 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type Claim, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import {Badge, Button, Card, CardBody, CardHeader, Spinner} from "reactstrap";
+import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Row, Spinner} from "reactstrap";
+import { useEffect, useState } from "react";
 
 const fetchClaim = async (id: number): Promise<Claim> => {
     const response = await axios.get<Claim>(`/api/claims/${id}`);
@@ -18,18 +19,42 @@ const patchClaim = async (id: number, newStatus: ClaimStatus): Promise<Claim> =>
     return response.data;
 };
 
+const patchClaimUrl = async (id: number, url: string): Promise<Claim> => {
+  const response = await axios.patch<Claim>(`/api/claims/${id}/url`, { url });
+  return response.data;
+};
+
 function ClaimDetail() {
 
     const { id } = useParams<{ id: string }>();
     const claimId = Number(id);
-    const queryClient = useQueryClient();
 
     const { data: claim, isPending, isError, error } = useQuery({
             queryKey: ['claim', claimId],
             queryFn: () => fetchClaim(claimId),
         });
 
-    const { mutate: updateStatus, isPending: isUpdating } = useMutation({
+    const [url, setUrl] = useState("");
+
+    useEffect(() => {
+        if (claim) {
+            setUrl(claim.url ?? "");
+        }
+    }, [claim]);
+
+    const queryClient = useQueryClient();
+
+    const { mutate: updateUrl, isPending: isUpdating, isError: urlError } = useMutation({
+        mutationFn: (url: string) => patchClaimUrl(claimId, url),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["claim", claimId] });
+        },
+        onError: (err) => {
+            console.error("Fehler beim Aktualisieren der URL:", err);
+        }
+    });
+
+    const { mutate: updateStatus, isPending: urlPatchPending } = useMutation({
         mutationFn: (newStatus: ClaimStatus) => patchClaim(claimId, newStatus),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["claim", claimId] });
@@ -39,6 +64,20 @@ function ClaimDetail() {
         }
     });
 
+    if (isPending) {
+        return <div className="text-center p-4 text-muted">Lade Claim...</div>;
+    }
+
+    if (isError) {
+        return <div className="text-center p-4 text-danger">Fehler beim Laden: {error.message}</div>;
+    }
+
+    const isUrlChanged = url.trim() !== (claim.url ?? "");
+
+    function handleSaveUrl() {
+        updateUrl(url.trim());
+    }
+
     const handleToggleStatus = () => {
         if (!claim) return;
         const nextStatus = claim.status === ClaimStatus.UNVERIFIED
@@ -47,14 +86,6 @@ function ClaimDetail() {
 
         updateStatus(nextStatus);
     };
-
-    if (isPending) {
-        return <div className="text-center p-4 text-muted">Lade Claim...</div>;
-    }
-
-    if (isError) {
-        return <div className="text-center p-4 text-danger">Fehler beim Laden: {error.message}</div>;
-    }
     
     return (<>
         {claim ? (
@@ -68,22 +99,53 @@ function ClaimDetail() {
                            className="border">{claim.status}</Badge>
 
                 </CardHeader>
-                <CardBody className="d-flex gap-2 align-items-center">
-                    <Button
-                        color={claim.status === ClaimStatus.UNVERIFIED ? "primary" : "warning"}
-                        onClick={handleToggleStatus}
-                        disabled={isUpdating}
-                    >
-                        {claim.status === ClaimStatus.UNVERIFIED ? "Verify" : "Unverify"}
+                <CardBody className="d-flex gap-3 align-items-end">
+                    <Col>
+                    <FormGroup className="flex-grow-1 mb-0">
+                        <Label for={`claim-url-${claim.id}`} className="small mb-1">
+                        URL
+                        </Label>
+                        <InputGroup size="sm">
+                        <Input
+                            id={`claim-url-${claim.id}`}
+                            type="url"
+                            invalid={urlError}
+                            placeholder="https://..."
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            onKeyDown={(e) => {
+                            if (e.key === "Enter" && isUrlChanged) handleSaveUrl();
+                            }}
+                            disabled={isUpdating}
+                        />
+                        {urlError && (
+                            <FormFeedback tooltip>
+                                Not a valid URL!
+                            </FormFeedback>
+                        )}
+                        <Button
+                            color="primary"
+                            outline
+                            onClick={handleSaveUrl}
+                            aria-label="URL speichern"
+                        >
+                            <i className="bi bi-check-lg"></i>
+                        </Button>
+                        </InputGroup>
+                        
+                    </FormGroup>
 
-                    </Button>
-                    {isUpdating ? (
-                        <div>
-                            <Spinner size="sm" className="me-2" />
-                        </div>
-                    ) : (
-                        <></>
-                    )}
+                    <Button
+                            color={claim.status === ClaimStatus.UNVERIFIED ? "primary" : "warning"}
+                            onClick={handleToggleStatus}
+                            disabled={isUpdating}
+                        >
+                            {isUpdating && <Spinner size="sm" className="me-2" />}
+                            {claim.status === ClaimStatus.UNVERIFIED ? "Verify" : "Unverify"}
+                        </Button>
+                    </Col>
+
+
                 </CardBody>
             </Card>) : (
             <div className="p-4 text-center text-muted">

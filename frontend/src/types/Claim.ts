@@ -1,6 +1,7 @@
 export interface Claim {
     id: number;
     name: string;
+    url: string;
     status: ClaimStatus;
 }
 

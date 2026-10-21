@@ -1,6 +1,9 @@
 package com.mediaprogramming.FactChecking.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import org.hibernate.validator.constraints.URL;
 
 @Entity
 public class Claim {
@@ -10,20 +13,24 @@ public class Claim {
 
      private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ClaimStatus status = ClaimStatus.UNVERIFIED;
+     @URL
+     private String url;
 
-    public Claim() {
-    }
+     @Enumerated(EnumType.STRING)
+     @Column(nullable = false)
+     private ClaimStatus status = ClaimStatus.UNVERIFIED;
 
-    public String getName() {
+     public Claim() {
+
+     }
+
+     public String getName() {
         return name;
-    }
+     }
 
-    public void setName(String name) {
+     public void setName(String name) {
         this.name = name;
-    }
+     }
 
     public long getId() {
         return id;
@@ -39,5 +46,13 @@ public class Claim {
 
     public void setStatus(ClaimStatus status) {
         this.status = status;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
