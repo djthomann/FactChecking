@@ -75,7 +75,7 @@ export function ClaimsList() {
     <h4 className="mb-0">Claims</h4>
     <div className="d-flex gap-2">
       <button onClick={() => {toggleFilters()}} type="button" className="btn p-0 border-0 shadow-none" aria-label="Filter">
-        <i className={`bi ${showFilterOptions ? "bi-chevron-down" : "bi-chevron-up"}`}></i>
+        <i className={`bi ${showFilterOptions ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
       </button>
       <Badge color="secondary" pill>
           {filteredClaims.length}
