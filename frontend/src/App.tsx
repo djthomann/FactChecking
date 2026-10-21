@@ -3,12 +3,26 @@ import './App.css'
 import ClaimOverviewPage from './pages/ClaimOverviewPage'
 import ClaimDetailPage from './pages/ClaimDetailPage'
 import ClaimNavbar from './components/ClaimNavbar'
+import { useEffect, useState } from 'react'
 
 function App() {
 
-  return (
+    const [theme, setTheme] = useState(() => {
+        return localStorage.getItem('theme') || 'dark';
+    });
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+    };
+
+    return (
         <>
-            <ClaimNavbar />
+            <ClaimNavbar theme={theme} toggleTheme={toggleTheme} />
             <div className="container main p-4 d-flex flex-column gap-4">
                 <Routes>
                         <Route path="/" element={<Navigate to="/claims" replace />} />
@@ -18,7 +32,7 @@ function App() {
                 </Routes>
             </div>
         </>
-  )
+    )
 }
 
 export default App

@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Navbar,
@@ -9,8 +8,7 @@ import {
   Button,
 } from 'reactstrap';
 
-function ClaimNavbar() {
-    const [dark, setDark] = useState(false);
+function ClaimNavbar({ theme, toggleTheme }: { theme: string, toggleTheme: () => void }) {
 
     return (
         <header className="bg-brand" data-bs-theme="dark">
@@ -24,12 +22,11 @@ function ClaimNavbar() {
                         <Button
                                 color="link"
                                 className="text-body"
-                                onClick={() => setDark((d) => !d)}
-                                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                                title={dark ? "Light mode" : "Dark mode"}
+                                onClick={() => toggleTheme()}
+                                title={theme === "dark" ? "Light mode" : "Dark mode"}
                             >
-                                <i className={`bi ${dark ? "bi-sun" : "bi-moon-stars"}`} />
-                            </Button>
+                            <i className={`bi ${theme === "dark" ? "bi-sun" : "bi-moon-stars"}`} />
+                        </Button>
                     </NavItem>
                 </Nav>
             </Navbar>

@@ -47,7 +47,7 @@ function ClaimsForm() {
         </CardHeader>
    
 
-        <Form onSubmit={handleSubmit} className="p-4 border rounded bg-light">
+        <Form onSubmit={handleSubmit} className="p-4">
             <FormGroup>
                 <Label for="name">Description</Label>
                 <Input 

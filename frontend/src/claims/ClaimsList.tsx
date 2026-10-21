@@ -84,7 +84,7 @@ export function ClaimsList() {
     </CardHeader>
 
     <Collapse isOpen={showFilterOptions}>
-      <div className="border-bottom bg-light px-3 py-2">
+      <div className="p-3">
         <Row className="g-2">
           <Col md="4">
             <Label for="search">Search</Label>
