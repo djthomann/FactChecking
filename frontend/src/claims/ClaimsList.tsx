@@ -4,6 +4,7 @@ import { ClaimStatus, type Claim} from "../types/Claim.ts";
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
 
 type StatusFilter = ClaimStatus | "";
 
@@ -13,6 +14,8 @@ const fetchClaims = async (): Promise<Claim[]> => {
 };
 
 export function ClaimsList() {
+
+    useClaimsLiveUpdates();
 
     const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
