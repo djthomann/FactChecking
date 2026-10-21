@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ClaimStatus, type Claim} from "../types/Claim.ts";
-import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, InputGroup, InputGroupText, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
+import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
