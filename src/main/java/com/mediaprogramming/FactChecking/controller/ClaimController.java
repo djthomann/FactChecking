@@ -36,8 +36,9 @@ public class ClaimController {
     }
 
     @PostMapping("")
-    public Claim newClaim(@RequestBody Claim claim) {
-        claim.setStatus(ClaimStatus.UNVERIFIED);
+    public Claim newClaim(@Valid @RequestBody CreateClaimRequest request) {
+        Claim claim = new Claim();
+        claim.setName(request.name());
         return repository.save(claim);
     }
 
