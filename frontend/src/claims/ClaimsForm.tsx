@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import axios from 'axios';
 import type {Claim, CreateClaimRequest} from "../types/Claim.ts";
 import type {SubmitEvent} from "react";
-import { Button, Card, CardHeader, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Card, CardHeader, Form, Input, InputGroup } from 'reactstrap';
 
 const createClient = async (request: Omit<CreateClaimRequest, 'id'>): Promise<Claim> => {
     const response = await axios.post<Claim>('/api/claims', request);
@@ -48,18 +48,15 @@ function ClaimsForm() {
    
 
         <Form onSubmit={handleSubmit} className="p-4">
-            <FormGroup>
-                <Label for="name">Description</Label>
+            <InputGroup>
                 <Input 
                     id="name"
                     name="name"
                     placeholder="Your claim goes here!"
                     type="text"
                 />
-            </FormGroup>
-            <FormGroup>
                 <Button color="primary">Create</Button>
-            </FormGroup>
+            </InputGroup>
         </Form>
     </Card>
     );
