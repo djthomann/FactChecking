@@ -20,6 +20,10 @@ public class Claim {
      @Column(nullable = false)
      private ClaimStatus status = ClaimStatus.UNVERIFIED;
 
+     @Enumerated(EnumType.STRING)
+     @Column(nullable = false)
+     private ClaimCategory category = ClaimCategory.GENERAL;
+
      public Claim() {
 
      }
@@ -54,5 +58,13 @@ public class Claim {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public ClaimCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ClaimCategory category) {
+        this.category = category;
     }
 }
