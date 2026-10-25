@@ -35,7 +35,9 @@ function ClaimsForm() {
         }
 
         addClaimMutation.mutate({
-            name: nameData
+            name: nameData,
+        }, {
+            onSuccess: () => form.reset(),
         })
     }
 
