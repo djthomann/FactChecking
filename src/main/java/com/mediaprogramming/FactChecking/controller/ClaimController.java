@@ -1,6 +1,7 @@
 package com.mediaprogramming.FactChecking.controller;
 
 import com.mediaprogramming.FactChecking.model.Claim;
+import com.mediaprogramming.FactChecking.model.ClaimCategory;
 import com.mediaprogramming.FactChecking.model.ClaimStatus;
 import com.mediaprogramming.FactChecking.repository.ClaimRepository;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,11 @@ public class ClaimController {
     @GetMapping("")
     public List<Claim> getAll() {
         return repository.findAll();
+    }
+
+    @GetMapping("/categories")
+    public ClaimCategory[] getCategories() {
+        return ClaimCategory.values();
     }
 
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

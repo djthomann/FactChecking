@@ -123,7 +123,16 @@ function ClaimDetail() {
                         </div>
                         <h4 className="mb-0">{claim?.name}</h4>
                     </div>
-                    <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} className="border">{claim.status}</Badge>
+                    <div className="d-flex gap-2">
+                        <Badge className="border">{claim.category}</Badge>               
+                        <Badge 
+                            color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} 
+                            className="border" 
+                            style={{ minWidth: '6rem' }}
+                        >
+                            {claim.status}
+                        </Badge>
+                    </div>
                 </CardHeader>
                 <CardBody className="d-flex gap-3 align-items-end">
                     <Col xs={12}>
