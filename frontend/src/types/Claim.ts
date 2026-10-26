@@ -20,7 +20,7 @@ export type ClaimStatus = typeof ClaimStatus[keyof typeof ClaimStatus];
 export const CATEGORY_DEFINITIONS = [
   { value: 'GENERAL', label: 'General' },
   { value: 'CULTURE_ARTS', label: 'Culture & Arts' },
-  { value: 'GEOGRAPHY_ARTS', label: 'Geography' },
+  { value: 'GEOGRAPHY_PLACES', label: 'Geography & Places' },
   { value: 'HEALTH_FITNESS', label: 'Health & Fitness' },
   { value: 'HISTORY_EVENTS', label: 'History & Events' },
   { value: 'HUMAN_ACTIVITIES', label: 'Human Activities' },

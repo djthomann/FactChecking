@@ -3,7 +3,7 @@ package com.mediaprogramming.FactChecking.model;
 public enum ClaimCategory {
     GENERAL,
     CULTURE_ARTS,
-    GEOGRAPHY_ARTS,
+    GEOGRAPHY_PLACES,
     HEALTH_FITNESS,
     HISTORY_EVENTS,
     HUMAN_ACTIVITIES,
