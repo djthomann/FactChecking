@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { ClaimStatus, type Claim} from "../types/Claim.ts";
+import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, type Claim, CLAIM_CATEGORY_LABELS} from "../types/Claim.ts";
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
 
 type StatusFilter = ClaimStatus | "";
+type CategoryFilter = ClaimCategory | ""
 
 const fetchClaims = async (): Promise<Claim[]> => {
     const response = await axios.get<Claim[]>('/api/claims');
@@ -19,6 +20,7 @@ export function ClaimsList() {
 
     const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
+    const [category, setCategory] = useState<CategoryFilter>("");
     const [query, setQuery] = useState("");
 
     const { data: claims, isPending, isError, error } = useQuery({
@@ -39,13 +41,17 @@ export function ClaimsList() {
 
       return claims.filter((claim) => {
           const matchesStatus = !status || claim.status === status;
+          const matchesCategory = !category || claim.category === category;
           const matchesQuery =
               !normalizedQuery || claim.name.toLowerCase().includes(normalizedQuery);
 
-          return matchesStatus && matchesQuery;
+
+          if(matchesCategory) console.log("MATCHES CATEGORY " + claim.category)
+
+          return matchesStatus && matchesCategory && matchesQuery;
       });
 
-    }, [claims, query, status]);
+    }, [claims, query, status, category]);
 
     if (isPending) return <p>Loading Claims...</p>;
     if (isError) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
@@ -55,9 +61,19 @@ export function ClaimsList() {
     }
 
     const STATUS_VALUES = Object.values(ClaimStatus);
+    const CLAIM_CATEGORY_VALUES = CATEGORY_DEFINITIONS.map(c => c.value);
+
+    const STATUS_LABELS: Record<ClaimStatus, string> = {
+      VERIFIED: "Verified",
+      UNVERIFIED: "Not Verified",
+    };
 
     function isClaimStatus(value: string): value is ClaimStatus {
       return (STATUS_VALUES as string[]).includes(value);
+    }
+
+    function isClaimCategory(value: string): value is ClaimCategory {
+      return (CLAIM_CATEGORY_VALUES as string[]).includes(value);
     }
 
     function handleStatusChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -69,10 +85,10 @@ export function ClaimsList() {
       setQuery(e.target.value);
     }
 
-    const STATUS_LABELS: Record<ClaimStatus, string> = {
-      VERIFIED: "Verified",
-      UNVERIFIED: "Not Verified",
-    };
+    function handleCategoryChange(e: React.ChangeEvent<HTMLInputElement>) {
+      const value = e.target.value;
+      setCategory(isClaimCategory(value) ? value : "");
+    }
 
     return (
         
@@ -107,7 +123,7 @@ export function ClaimsList() {
                     onChange={handleQueryChange}
                 />
             </div>
-        </Col>
+          </Col>
           <Col md="4">
             <Label>Status</Label>
             <Input
@@ -120,6 +136,22 @@ export function ClaimsList() {
               {STATUS_VALUES.map((s) => (
                 <option key={s} value={s}>
                   {STATUS_LABELS[s]}
+                </option>
+              ))}
+            </Input>
+          </Col>
+          <Col md="4">
+            <Label>Category</Label>
+            <Input
+              type="select"
+              bsSize="sm"
+              value={category}
+              onChange={handleCategoryChange}
+            >
+              <option value="">All</option>
+              {CATEGORY_DEFINITIONS.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
                 </option>
               ))}
             </Input>
@@ -148,7 +180,16 @@ export function ClaimsList() {
               <span className="fw-semibold">{claim.name}</span>
             </Link>
 
-            <Badge color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} className="border">{claim.status}</Badge>
+            <div className="d-flex gap-2">
+              <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>
+              <Badge 
+                  color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} 
+                  className="border" 
+                  style={{ minWidth: '6rem' }}
+              >
+                  {claim.status}
+              </Badge>
+            </div>
           </ListGroupItem>
         ))}
       </ListGroup>
