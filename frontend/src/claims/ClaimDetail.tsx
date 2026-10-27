@@ -46,7 +46,7 @@ function ClaimDetail() {
 
     const queryClient = useQueryClient();
 
-    const { mutate: updateUrl, isPending: isUpdating, isError: urlError } = useMutation({
+    const { mutate: updateUrl, reset, isPending: isUpdating, isError: urlError, isSuccess: urlSuccess } = useMutation({
         mutationFn: (url: string) => patchClaimUrl(claimId, url),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["claim", claimId] });
@@ -55,6 +55,13 @@ function ClaimDetail() {
             console.error("Fehler beim Aktualisieren der URL:", err);
         }
     });
+
+    useEffect(() => {
+        if (!urlSuccess) return;
+
+        const timer = setTimeout(() => reset(), 3000);
+        return () => clearTimeout(timer);
+    }, [urlSuccess, reset]);
 
     const { mutate: updateStatus, isPending: urlPatchPending } = useMutation({
         mutationFn: (newStatus: ClaimStatus) => patchClaim(claimId, newStatus),
@@ -142,6 +149,7 @@ function ClaimDetail() {
                                     <Input
                                         id={`claim-url-${claim.id}`}
                                         type="url"
+                                        valid={urlSuccess}
                                         invalid={urlError}
                                         placeholder="https://..."
                                         value={url}
@@ -162,6 +170,12 @@ function ClaimDetail() {
                                     {urlError && (
                                         <FormFeedback tooltip>
                                             Please enter a valid URL
+                                        </FormFeedback>
+                                    )}
+
+                                    {url && (
+                                        <FormFeedback tooltip>
+                                            Successfully 
                                         </FormFeedback>
                                     )}
                                 </InputGroup>
