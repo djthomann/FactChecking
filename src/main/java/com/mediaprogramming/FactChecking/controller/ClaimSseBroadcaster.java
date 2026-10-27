@@ -1,5 +1,6 @@
 package com.mediaprogramming.FactChecking.controller;
 
+import com.mediaprogramming.FactChecking.service.ClaimsChangedEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class ClaimEvents {
+public class ClaimSseBroadcaster {
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 

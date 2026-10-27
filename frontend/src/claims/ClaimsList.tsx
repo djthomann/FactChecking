@@ -45,9 +45,6 @@ export function ClaimsList() {
           const matchesQuery =
               !normalizedQuery || claim.name.toLowerCase().includes(normalizedQuery);
 
-
-          if(matchesCategory) console.log("MATCHES CATEGORY " + claim.category)
-
           return matchesStatus && matchesCategory && matchesQuery;
       });
 
