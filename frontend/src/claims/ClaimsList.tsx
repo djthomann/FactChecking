@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, type Claim, CLAIM_CATEGORY_LABELS} from "../types/Claim.ts";
-import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row } from 'reactstrap';
+import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row, Spinner } from 'reactstrap';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
@@ -18,7 +18,7 @@ export function ClaimsList() {
 
     useClaimsLiveUpdates();
 
-    const [showFilterOptions, setShowFilterOptions] = useState(true);
+    const [showFilterOptions, setShowFilterOptions] = useState(false);
     const [status, setStatus] = useState<StatusFilter>("");
     const [category, setCategory] = useState<CategoryFilter>("");
     const [query, setQuery] = useState("");
@@ -50,10 +50,8 @@ export function ClaimsList() {
 
     }, [claims, query, status, category]);
 
-    if (isPending) return <p>Loading Claims...</p>;
-    if (isError) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
-
     function toggleFilters() {
+      // if(!isPending && !isError) 
       setShowFilterOptions(!showFilterOptions)
     }
 
@@ -92,9 +90,9 @@ export function ClaimsList() {
     <Card className="shadow-sm">
     <CardHeader className="d-flex justify-content-between align-items-center">
     <h4 className="mb-0">Browse all claims</h4>
-    <div className="d-flex gap-2">
+    <div className="d-flex gap-3">
       <button onClick={() => {toggleFilters()}} type="button" className="btn p-0 border-0 shadow-none" aria-label="Filter">
-        <i className={`bi ${showFilterOptions ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
+        <i className={`bi ${showFilterOptions ? "bi-funnel-fill" : "bi-funnel"}`}></i>
       </button>
       <Badge color="secondary" pill>
           {filteredClaims.length}
@@ -157,7 +155,17 @@ export function ClaimsList() {
       </div>
     </Collapse>
 
-    {claims.length === 0 ? (
+    {isPending ? (
+     <CardBody className="text-center text-muted">
+        <Spinner animation="border" role="status" size="sm" className="me-2" />
+        Loading Claims...
+      </CardBody>
+    ) : isError ? (
+      <CardBody className="text-center text-muted">
+        <i className="bi bi-exclamation-triangle fs-1 d-block mb-2" />
+        Error: {error.message}
+      </CardBody>
+    ) : claims.length === 0 ? (
       <CardBody className="text-center text-muted">
         <i className="bi bi-inbox fs-1 d-block mb-2" />
         There are no claims at the moment.
