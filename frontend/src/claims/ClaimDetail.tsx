@@ -11,11 +11,7 @@ const fetchClaim = async (id: number): Promise<Claim> => {
 };
 
 const patchClaim = async (id: number, newStatus: ClaimStatus): Promise<Claim> => {
-    const response = await axios.patch<Claim>(`/api/claims/${id}/status`, `"${newStatus}"`, {
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
+    const response = await axios.patch<Claim>(`/api/claims/${id}/status`, { status: newStatus });
     return response.data;
 };
 

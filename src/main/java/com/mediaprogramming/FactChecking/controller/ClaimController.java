@@ -1,97 +1,78 @@
 package com.mediaprogramming.FactChecking.controller;
 
-import com.mediaprogramming.FactChecking.model.Claim;
 import com.mediaprogramming.FactChecking.model.ClaimCategory;
-import com.mediaprogramming.FactChecking.model.ClaimStatus;
-import com.mediaprogramming.FactChecking.repository.ClaimRepository;
-import jakarta.transaction.Transactional;
+import com.mediaprogramming.FactChecking.service.ClaimService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/claims")
 public class ClaimController {
 
-    private final ClaimRepository repository;
-    private final ClaimEvents claimEvents;
-    private final ApplicationEventPublisher events;
+    private final ClaimService service;
+    private final ClaimSseBroadcaster claimSseBroadcaster;
 
     @Autowired
-    public ClaimController(ClaimRepository repository, ClaimEvents claimEvents, ApplicationEventPublisher events) {
-        this.repository = repository;
-        this.claimEvents = claimEvents;
-        this.events = events;
+    public ClaimController(ClaimService service, ClaimSseBroadcaster claimSseBroadcaster) {
+        this.service = service;
+        this.claimSseBroadcaster = claimSseBroadcaster;
     }
 
     @GetMapping("")
-    public List<Claim> getAll() {
-        return repository.findAll();
+    public List<ClaimResponse> getAll() {
+        return service.findAll().stream()
+                .map(ClaimResponse::from)
+                .toList();
     }
 
     @GetMapping("/categories")
-    public ClaimCategory[] getCategories() {
-        return ClaimCategory.values();
+    public List<ClaimCategory> getCategories() {
+        return List.of(ClaimCategory.values());
     }
 
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamClaims() {
-        return claimEvents.subscribe();
+        return claimSseBroadcaster.subscribe();
     }
 
     @GetMapping("/{id}")
-    public Claim getById(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow();
+    public ResponseEntity<ClaimResponse> getById(@PathVariable Long id) {
+        return service.findById(id)
+                .map(ClaimResponse::from)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("")
-    public Claim newClaim(@Valid @RequestBody CreateClaimRequest request) {
-        Claim claim = new Claim();
-        claim.setName(request.name());
-
-        Claim saved = repository.save(claim);
-        claimEvents.broadcast("claims-changed");
-
-        return saved;
+    public ClaimResponse newClaim(@Valid @RequestBody CreateClaimRequest request) {
+        return ClaimResponse.from(service.create(request));
     }
 
     @PatchMapping("/{id}/url")
-    @Transactional
-    public ResponseEntity<Claim> updateClaimUrl(@PathVariable long id, @Valid @RequestBody UpdateUrlRequest request) {
-        return repository.findById(id)
-                .map(claim -> {
-                    claim.setUrl(request.url());
-                    return ResponseEntity.ok(claim);
-                })
+    public ResponseEntity<ClaimResponse> updateClaimUrl(@PathVariable long id, @Valid @RequestBody UpdateUrlRequest request) {
+        return service.updateUrl(id, request)
+                .map(ClaimResponse::from)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}/status")
-    @Transactional
-    public ResponseEntity<Claim> updateClaimStatus(@PathVariable long id, @RequestBody ClaimStatus newStatus) {
-        return repository.findById(id)
-                .map(claim -> {
-                    claim.setStatus(newStatus);
-                    events.publishEvent(new ClaimsChangedEvent());
-                    return ResponseEntity.ok(claim);
-                })
+    public ResponseEntity<ClaimResponse> updateClaimStatus(@PathVariable long id, @RequestBody UpdateStatusRequest request) {
+        return service.updateStatus(id, request)
+                .map(ClaimResponse::from)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Claim> deleteClaim(@PathVariable Long id) {
-        repository.deleteById(id);
-        claimEvents.broadcast("claims-changed");
+    public ResponseEntity<Void> deleteClaim(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.ok().build();
     }
 
