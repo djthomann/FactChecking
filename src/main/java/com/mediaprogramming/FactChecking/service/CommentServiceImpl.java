@@ -1,6 +1,5 @@
 package com.mediaprogramming.FactChecking.service;
 
-import com.mediaprogramming.FactChecking.model.Claim;
 import com.mediaprogramming.FactChecking.model.Comment;
 import com.mediaprogramming.FactChecking.repository.ClaimRepository;
 import com.mediaprogramming.FactChecking.repository.CommentRepository;

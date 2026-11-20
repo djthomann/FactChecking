@@ -1,8 +1,6 @@
 package com.mediaprogramming.FactChecking.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.List;
@@ -27,7 +25,7 @@ public class Claim {
      private ClaimCategory category = ClaimCategory.GENERAL;
 
      @OneToMany
-     @JoinColumn(name = "claim_id")
+     @JoinColumn(name = "claim_id") // TODO() Is this column correct?
      private List<Comment> comments;
 
      public Claim() {

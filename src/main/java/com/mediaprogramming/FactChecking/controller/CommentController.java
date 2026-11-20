@@ -1,6 +1,5 @@
 package com.mediaprogramming.FactChecking.controller;
 
-import com.mediaprogramming.FactChecking.model.Comment;
 import com.mediaprogramming.FactChecking.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {type Claim, ClaimStatus, type Comment} from "../types/Claim";
+import {type Claim, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
 import {Link, useNavigate, useParams } from 'react-router-dom';
-import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, ListGroup, Spinner} from "reactstrap";
+import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
 import CommentList from "./CommentList";
 
@@ -25,14 +25,6 @@ const deleteClaim = async(id: number) => {
     const response = await axios.delete<Claim>(`/api/claims/${id}`);
     return response.data;
 }
-
-const fetchComments = async (): Promise<Comment[]> => {
-    const response = await axios.get<Comment[]>('/api/claims/1/comments');
-
-    console.log(response);
-
-    return response.data;
-};
 
 function ClaimDetail() {
 

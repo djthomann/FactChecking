@@ -2,8 +2,6 @@ package com.mediaprogramming.FactChecking.model;
 
 import jakarta.persistence.*;
 
-import javax.annotation.processing.Generated;
-
 @Entity
 public class Comment {
 
