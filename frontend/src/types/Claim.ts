@@ -6,6 +6,10 @@ export interface Claim {
     category: ClaimCategory;
 }
 
+export interface Comment {
+  text: string;
+}
+
 export interface CreateClaimRequest {
     name: string
 }

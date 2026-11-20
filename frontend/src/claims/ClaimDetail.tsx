@@ -1,9 +1,10 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {type Claim, ClaimStatus} from "../types/Claim";
+import {type Claim, ClaimStatus, type Comment} from "../types/Claim";
 import axios from 'axios';
 import {Link, useNavigate, useParams } from 'react-router-dom';
-import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
+import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, ListGroup, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
+import CommentList from "./CommentList";
 
 const fetchClaim = async (id: number): Promise<Claim> => {
     const response = await axios.get<Claim>(`/api/claims/${id}`);
@@ -24,6 +25,14 @@ const deleteClaim = async(id: number) => {
     const response = await axios.delete<Claim>(`/api/claims/${id}`);
     return response.data;
 }
+
+const fetchComments = async (): Promise<Comment[]> => {
+    const response = await axios.get<Comment[]>('/api/claims/1/comments');
+
+    console.log(response);
+
+    return response.data;
+};
 
 function ClaimDetail() {
 
@@ -109,6 +118,7 @@ function ClaimDetail() {
     
     return (<>
         {claim ? (
+            <>
             <Card className="shadow-sm">
                 <CardHeader className="d-flex justify-content-between align-items-center gap-4">
                     <div className="d-flex align-items-center gap-4">
@@ -205,11 +215,15 @@ function ClaimDetail() {
                                     Delete
                                 </Button>
                             </div>
+
                         </div>
                     </Col>
 
                 </CardBody>
-            </Card>) : (
+            </Card>
+            <CommentList claimId={claimId}></CommentList>
+            </>
+            ) : (
             <div className="p-4 text-center text-muted">
                 Keine Daten zu diesem Claim gefunden.
             </div>

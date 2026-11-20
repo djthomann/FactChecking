@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 
+import java.util.List;
+
 @Entity
 public class Claim {
 
@@ -23,6 +25,10 @@ public class Claim {
      @Enumerated(EnumType.STRING)
      @Column(nullable = false)
      private ClaimCategory category = ClaimCategory.GENERAL;
+
+     @OneToMany
+     @JoinColumn(name = "claim_id")
+     private List<Comment> comments;
 
      public Claim() {
 
@@ -66,5 +72,13 @@ public class Claim {
 
     public void setCategory(ClaimCategory category) {
         this.category = category;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

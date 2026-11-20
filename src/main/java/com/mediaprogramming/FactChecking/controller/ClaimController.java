@@ -51,7 +51,7 @@ public class ClaimController {
 
     @PostMapping("")
     public ClaimResponse newClaim(@Valid @RequestBody CreateClaimRequest request) {
-        return ClaimResponse.from(service.create(request));
+        return ClaimResponse.from(service.create(request)); // TODO() Don't break layers, service should not know of controller request
     }
 
     @PatchMapping("/{id}/url")
