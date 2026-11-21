@@ -5,6 +5,7 @@ import {Link, useNavigate, useParams } from 'react-router-dom';
 import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
 import { useEffect, useState } from "react";
 import CommentList from "./CommentList";
+import CommentInput from "./CommentInput";
 
 const fetchClaim = async (id: number): Promise<Claim> => {
     const response = await axios.get<Claim>(`/api/claims/${id}`);
@@ -213,6 +214,7 @@ function ClaimDetail() {
 
                 </CardBody>
             </Card>
+            <CommentInput claimId={claimId}></CommentInput>
             <CommentList claimId={claimId}></CommentList>
             </>
             ) : (

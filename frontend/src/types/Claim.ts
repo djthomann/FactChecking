@@ -11,7 +11,11 @@ export interface Comment {
 }
 
 export interface CreateClaimRequest {
-    name: string
+  name: string
+}
+
+export interface CreateCommentRequest {
+  text: string
 }
 
 export const ClaimStatus = {
