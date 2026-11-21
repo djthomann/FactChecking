@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/claims/{claimId}/comments")
+@RequestMapping("/api")
 public class CommentController {
 
     private final CommentService commentService;
@@ -18,14 +18,15 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("")
+    @GetMapping("/claims/{claimId}/comments")
     public List<CommentResponse> getComments(@PathVariable Long claimId) {
         return commentService.findByClaimId(claimId).stream()
                 .map(CommentResponse::from)
                 .toList();
     }
 
-    @PostMapping("")
+    @PostMapping("/claims/{claimId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CommentResponse> newComment(
             @PathVariable Long claimId,
             @Valid @RequestBody CreateCommentRequest request) {
@@ -34,4 +35,11 @@ public class CommentController {
                 .map(c -> ResponseEntity.status(HttpStatus.CREATED).body(c))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long commentId) {
+        commentService.delete(commentId);
+    }
+
 }
