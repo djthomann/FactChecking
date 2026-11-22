@@ -4,8 +4,11 @@ import com.mediaprogramming.FactChecking.model.ClaimCategory;
 import com.mediaprogramming.FactChecking.service.ClaimService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -49,9 +52,11 @@ public class ClaimController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("")
-    public ClaimResponse newClaim(@Valid @RequestBody CreateClaimRequest request) {
-        return ClaimResponse.from(service.create(request)); // TODO() Don't break layers, service should not know of controller request
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ClaimResponse createClaim(@RequestBody @Valid CreateClaimRequest request,
+                                @AuthenticationPrincipal UserDetails user) {
+        return service.createClaim(request, user.getUsername());
     }
 
     @PatchMapping("/{id}/url")

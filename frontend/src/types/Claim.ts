@@ -1,5 +1,6 @@
 export interface Claim {
     id: number;
+    authorUsername: string,
     title: string;
     text: string;
     url: string;
@@ -9,6 +10,7 @@ export interface Claim {
 
 export interface Comment {
   id: number;
+  authorUsername: string;
   text: string;
 }
 

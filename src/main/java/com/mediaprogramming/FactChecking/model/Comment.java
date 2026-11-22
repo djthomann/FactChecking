@@ -9,6 +9,10 @@ public class Comment {
     @GeneratedValue
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id")
+    private AppUser author;
+
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -18,8 +22,9 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(Claim claim, String text) {
+    public Comment(Claim claim, AppUser author, String text) {
         this.claim = claim;
+        this.author = author;
         this.text = text;
     }
 
@@ -45,5 +50,13 @@ public class Comment {
 
     public void setClaim(Claim claim) {
         this.claim = claim;
+    }
+
+    public AppUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(AppUser author) {
+        this.author = author;
     }
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Card, CardBody, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, Spinner, UncontrolledDropdown } from "reactstrap";
+import { Badge, Card, CardBody, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, Spinner, UncontrolledDropdown } from "reactstrap";
 import type { Comment } from "../types/Claim";
 
 const fetchComments = async (claimId: number): Promise<Comment[]> => {
@@ -58,7 +58,7 @@ function CommentList({ claimId }: { claimId: number }) {
                     <ListGroupItem key={comment.id}>
                         <div className="d-flex justify-content-between align-items-center mb-1">
                             <div className="fw-semibold small text-muted">
-                                User
+                                <Badge color="light" className="text-dark border"><i className="bi bi-person me-1"></i>{comment.authorUsername}</Badge>
                             </div>
 
                             <UncontrolledDropdown>

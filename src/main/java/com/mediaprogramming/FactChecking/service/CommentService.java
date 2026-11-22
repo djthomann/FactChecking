@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CommentService {
 
-    Optional<Comment> create(Long claimId, String text);
+    Optional<Comment> create(Long claimId, String text, String username);
 
     List<Comment> findAll();
 

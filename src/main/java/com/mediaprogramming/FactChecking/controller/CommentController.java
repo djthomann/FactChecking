@@ -4,6 +4,8 @@ import com.mediaprogramming.FactChecking.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +31,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CommentResponse> newComment(
             @PathVariable Long claimId,
-            @Valid @RequestBody CreateCommentRequest request) {
-        return commentService.create(claimId, request.text())
+            @Valid @RequestBody CreateCommentRequest request,
+            @AuthenticationPrincipal UserDetails user) {
+        return commentService.create(claimId, request.text(), user.getUsername())
                 .map(CommentResponse::from)
                 .map(c -> ResponseEntity.status(HttpStatus.CREATED).body(c))
                 .orElseGet(() -> ResponseEntity.notFound().build());

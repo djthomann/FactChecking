@@ -9,6 +9,9 @@ import CommentInput from "./CommentInput";
 
 const fetchClaim = async (id: number): Promise<Claim> => {
     const response = await axios.get<Claim>(`/api/claims/${id}`);
+
+    console.log(response.data)
+
     return response.data;
 };
 
@@ -138,7 +141,8 @@ function ClaimDetail() {
                         <h4 className="mb-0">{claim?.title}</h4>
                     </div>
                     <div className="d-flex gap-2">
-                        <Badge color="light" className="text-dark border">#{id}</Badge>
+                        <Badge color="light" className="text-dark border"># {id}</Badge>
+                        <Badge color="light" className="text-dark border"><i className="bi bi-person me-1"></i>{claim.authorUsername}</Badge>
                         <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>        
                         <Badge 
                             color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} 

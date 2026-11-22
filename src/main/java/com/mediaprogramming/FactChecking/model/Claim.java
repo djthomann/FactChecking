@@ -11,7 +11,11 @@ public class Claim {
      @Id @GeneratedValue
      private long id;
 
-     private String title;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id")
+    private AppUser author;
+
+    private String title;
 
     private String text;
 
@@ -88,5 +92,13 @@ public class Claim {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public AppUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(AppUser author) {
+        this.author = author;
     }
 }
