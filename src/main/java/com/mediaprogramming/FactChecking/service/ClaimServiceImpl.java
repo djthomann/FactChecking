@@ -28,7 +28,10 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public Claim create(CreateClaimRequest request) {
         Claim claim = new Claim();
-        claim.setName(request.name());
+        claim.setTitle(request.title());
+        claim.setText(request.text());
+        claim.setCategory(request.category());
+        claim.setUrl(request.url());
         events.publishEvent(new ClaimsChangedEvent());
         return repository.save(claim);
     }

@@ -29,10 +29,12 @@ export function ClaimsList() {
     });
 
     useEffect(() => {
-            if (claims?.length === 0) {
-                setShowFilterOptions(false)
-            }
-        }, [claims]);
+        if (claims?.length === 0) {
+            setShowFilterOptions(false)
+        } else {
+            setShowFilterOptions(true)
+        }
+    }, [claims]);
 
     const filteredClaims = useMemo(() => {
       if (!claims) return [];
@@ -43,7 +45,7 @@ export function ClaimsList() {
           const matchesStatus = !status || claim.status === status;
           const matchesCategory = !category || claim.category === category;
           const matchesQuery =
-              !normalizedQuery || claim.name.toLowerCase().includes(normalizedQuery);
+              !normalizedQuery || claim.title.toLowerCase().includes(normalizedQuery);
 
           return matchesStatus && matchesCategory && matchesQuery;
       });
@@ -182,7 +184,7 @@ export function ClaimsList() {
               className="stretched-link text-decoration-none text-reset d-flex align-items-center gap-3"
             >
               <Badge color="light" className="text-dark border">#{claim.id}</Badge>
-              <span className="fw-semibold">{claim.name}</span>
+              <span className="fw-semibold">{claim.title}</span>
             </Link>
 
             <div className="d-flex gap-2">

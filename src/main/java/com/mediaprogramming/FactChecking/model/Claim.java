@@ -11,7 +11,9 @@ public class Claim {
      @Id @GeneratedValue
      private long id;
 
-     private String name;
+     private String title;
+
+    private String text;
 
      @URL
      private String url;
@@ -32,12 +34,12 @@ public class Claim {
 
      }
 
-     public String getName() {
-        return name;
+     public String getTitle() {
+        return title;
      }
 
-     public void setName(String name) {
-        this.name = name;
+     public void setTitle(String name) {
+        this.title = name;
      }
 
     public long getId() {
@@ -78,5 +80,13 @@ public class Claim {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

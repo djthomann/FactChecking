@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {type Claim, ClaimStatus} from "../types/Claim";
+import {type Claim, CLAIM_CATEGORY_LABELS, ClaimStatus} from "../types/Claim";
 import axios from 'axios';
 import {Link, useNavigate, useParams } from 'react-router-dom';
 import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
@@ -39,6 +39,15 @@ function ClaimDetail() {
         });
 
     const [url, setUrl] = useState("");
+
+    
+    useEffect(() => {
+        if (claim) {
+            setUrl(claim.url ?? "no url");
+        } else {
+            setUrl("no url")
+        }
+    }, [claim]);
 
     useEffect(() => {
         if (claim) {
@@ -114,7 +123,7 @@ function ClaimDetail() {
             <>
             <Card className="shadow-sm">
                 <CardHeader className="d-flex justify-content-between align-items-center gap-4">
-                    <div className="d-flex align-items-center gap-4">
+                    <div className="d-flex align-items-center gap-2">
                         <div className="d-flex align-items-center gap-2">
                             <Button 
                                 tag={Link} 
@@ -125,12 +134,12 @@ function ClaimDetail() {
                             >
                                 <i className="bi-chevron-left fs-4"></i>
                             </Button>
-                            <Badge color="light" className="text-dark border">#{id}</Badge>
                         </div>
-                        <h4 className="mb-0">{claim?.name}</h4>
+                        <h4 className="mb-0">{claim?.title}</h4>
                     </div>
                     <div className="d-flex gap-2">
-                        <Badge className="border">{claim.category}</Badge>               
+                        <Badge color="light" className="text-dark border">#{id}</Badge>
+                        <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>        
                         <Badge 
                             color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} 
                             className="border" 
@@ -145,43 +154,51 @@ function ClaimDetail() {
                         <div className="d-flex flex-column gap-3">
                             {/* URL-Bereich */}
                             <FormGroup className="mb-0">
-                                <Label for={`claim-url-${claim.id}`} className="small fw-semibold mb-1">
-                                    URL
-                                </Label>
-                                <InputGroup size="sm" className="has-validation">
-                                    <Input
-                                        id={`claim-url-${claim.id}`}
-                                        type="url"
-                                        valid={urlSuccess}
-                                        invalid={urlError}
-                                        placeholder="https://..."
-                                        value={url}
-                                        onChange={(e) => setUrl(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter" && isUrlChanged) handleSaveUrl();
-                                        }}
-                                        disabled={isUpdating}
-                                    />
-                                    <Button
-                                        color="primary"
-                                        onClick={handleSaveUrl}
-                                        disabled={!isUrlChanged || isUpdating}
-                                    >
-                                        <i className="bi bi-check-lg"></i>
-                                    </Button>
-                                    
-                                    {urlError && (
-                                        <FormFeedback tooltip>
-                                            Please enter a valid URL
-                                        </FormFeedback>
-                                    )}
+                                <div
+                                    className=" rounded py-3 mb-3 fs-3"
+                                    style={{ whiteSpace: "pre-wrap" }}
+                                >
+                                    » {claim.text} «
+                                </div>
+                                <div>
+                                    <Label for={`claim-url-${claim.id}`} className="small fw-semibold mb-1">
+                                        URL
+                                    </Label>
+                                    <InputGroup size="sm" className="has-validation">
+                                        <Input
+                                            id={`claim-url-${claim.id}`}
+                                            type="url"
+                                            valid={urlSuccess}
+                                            invalid={urlError}
+                                            placeholder="https://..."
+                                            value={url}
+                                            onChange={(e) => setUrl(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" && isUrlChanged) handleSaveUrl();
+                                            }}
+                                            disabled={isUpdating}
+                                        />
+                                        <Button
+                                            color="primary"
+                                            onClick={handleSaveUrl}
+                                            disabled={!isUrlChanged || isUpdating}
+                                        >
+                                            <i className="bi bi-check-lg"></i>
+                                        </Button>
+                                        
+                                        {urlError && (
+                                            <FormFeedback tooltip>
+                                                Please enter a valid URL
+                                            </FormFeedback>
+                                        )}
 
-                                    {url && (
-                                        <FormFeedback tooltip>
-                                            Successfully 
-                                        </FormFeedback>
-                                    )}
-                                </InputGroup>
+                                        {url && (
+                                            <FormFeedback tooltip>
+                                                Successfully 
+                                            </FormFeedback>
+                                        )}
+                                    </InputGroup>
+                                </div>
                             </FormGroup>
 
                             {/* Aktions-Buttons (Verify & Löschen) */}

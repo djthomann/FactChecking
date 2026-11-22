@@ -1,18 +1,21 @@
 export interface Claim {
     id: number;
-    name: string;
+    title: string;
+    text: string;
     url: string;
     status: ClaimStatus;
     category: ClaimCategory;
 }
 
 export interface Comment {
-  id: number,
+  id: number;
   text: string;
 }
 
 export interface CreateClaimRequest {
-  name: string
+  title: string;
+  text: string,
+  category: ClaimCategory
 }
 
 export interface CreateCommentRequest {

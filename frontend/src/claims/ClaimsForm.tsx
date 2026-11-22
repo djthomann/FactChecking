@@ -1,8 +1,8 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import axios from 'axios';
-import type {Claim, CreateClaimRequest} from "../types/Claim.ts";
-import type {SubmitEvent} from "react";
-import { Button, Card, CardHeader, Form, Input, InputGroup } from 'reactstrap';
+import {CATEGORY_DEFINITIONS, type Claim, type ClaimCategory, type CreateClaimRequest} from "../types/Claim.ts";
+import {useState, type SubmitEvent} from "react";
+import { Button, Card, CardHeader, Col, Form, FormGroup, Input, InputGroup, Label, Row } from 'reactstrap';
 
 const createClient = async (request: Omit<CreateClaimRequest, 'id'>): Promise<Claim> => {
     const response = await axios.post<Claim>('/api/claims', request);
@@ -11,12 +11,19 @@ const createClient = async (request: Omit<CreateClaimRequest, 'id'>): Promise<Cl
 
 function ClaimsForm() {
 
+    const [title, setTitle] = useState("");
+    const [text, setText] = useState("");
+    const [category, setCategory] = useState<ClaimCategory>("GENERAL");
+    const [url, setUrl] = useState("");
+
     const queryClient = useQueryClient();
 
     const addClaimMutation = useMutation({
         mutationFn: createClient,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['claims'] });
+            setTitle("")
+            setText("")
         },
     });
 
@@ -24,20 +31,10 @@ function ClaimsForm() {
         // Prevent the browser from reloading the page
         e.preventDefault();
 
-        // Read the form data
-        const form = e.currentTarget as HTMLFormElement;
-        const formData = new FormData(form);
-
-        const nameData = formData.get("name");
-
-        if (typeof nameData !== "string") {
-            return;
-        }
-
         addClaimMutation.mutate({
-            name: nameData,
-        }, {
-            onSuccess: () => form.reset(),
+            title: title,
+            text: text,
+            category: category
         })
     }
 
@@ -48,17 +45,72 @@ function ClaimsForm() {
         <h4 className="mb-0">Create a claim</h4>
         </CardHeader>
    
+        <Form onSubmit={handleSubmit} className="p-3">
+            <Row>
+                <Col md={4}>
+                    <FormGroup>
+                        <Label for="title" className="fw-semibold">Title</Label>
+                        <Input
+                            id="title"
+                            name="title"
+                            placeholder="Title of your claim!"
+                            value={title}
+                            type="text"
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md={4}>
+                    <FormGroup>
+                        <Label for="url" className="fw-semibold">URL</Label>
+                        <Input
+                            id="url"
+                            name="url"
+                            placeholder="https://..."
+                            value={url}
+                            type="text"
+                            onChange={(e) => setUrl(e.target.value)}
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md={4}>
+                    <FormGroup>
+                        <Label for="category" className="fw-semibold">Category</Label>
+                        <Input
+                            id="category"
+                            name="category"
+                            type="select"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value as ClaimCategory)}
+                        >
+                            {CATEGORY_DEFINITIONS.map((c) => (
+                                <option key={c.value} value={c.value}>
+                                    {c.label}
+                                </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
+                </Col>
+            </Row>
 
-        <Form onSubmit={handleSubmit} className="p-4">
-            <InputGroup>
-                <Input 
-                    id="name"
-                    name="name"
-                    placeholder="Your claim goes here!"
-                    type="text"
+            <FormGroup>
+                <Label for="text" className="fw-semibold">Description</Label>
+                <Input
+                    id="text"
+                    name="text"
+                    type="textarea"
+                    rows={4}
+                    placeholder="Describe your claim…"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
                 />
-                <Button color="primary">Create</Button>
-            </InputGroup>
+            </FormGroup>
+
+            <div className="d-flex justify-content-start">
+                <Button type="submit" color="primary">
+                    Claim!
+                </Button>
+            </div>
         </Form>
     </Card>
     );
