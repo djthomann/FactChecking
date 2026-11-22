@@ -16,6 +16,8 @@ public interface ClaimService {
 
     Optional<Claim> findById(Long id);
 
+    List<Claim> findByAuthor(String username);
+
     List<Claim> findAll();
 
     Claim updateStatus(Long id, UpdateStatusRequest request, String username);

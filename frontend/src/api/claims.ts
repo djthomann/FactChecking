@@ -17,7 +17,7 @@ export const fetchClaims = async (): Promise<Claim[]> =>
     (await axios.get<Claim[]>("/api/claims")).data;
 
 export const fetchClaimsByUser = async (username: string): Promise<Claim[]> =>
-    (await axios.get<Claim[]>(`/api/users/${username}/claims`)).data;
+    (await axios.get<Claim[]>("/api/claims", { params: { author: username } })).data;
 
 export const patchClaimStatus = async (id: number, newStatus: ClaimStatus): Promise<Claim> => 
     (await axios.patch<Claim>(`/api/claims/${id}/status`, { status: newStatus })).data

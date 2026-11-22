@@ -2,9 +2,19 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, ListGroup, ListGroupItem, Spinner } from "reactstrap";
 import { useMe } from "../hooks/useMe";
 import { useLogout } from "../hooks/useLogout";
+import ClaimsList from "../claims/ClaimsList";
+import { fetchClaimsByUser } from "../api/claims";
+import { useQuery } from "@tanstack/react-query";
 
 function AccountPage() {
-    const { data: me, isPending } = useMe();
+    const { data: me } = useMe();
+
+    const { data, isPending, error } = useQuery({
+        queryKey: ["claims", "user", me?.username],
+        queryFn: () => fetchClaimsByUser(me!.username),
+        enabled: !!me,
+    });
+
     const logoutMutation = useLogout();
     const navigate = useNavigate();
 
@@ -27,7 +37,8 @@ function AccountPage() {
     };
 
     return (
-        <Card className="mx-auto mt-5" style={{ width: 600 }}>
+        <>
+        <Card className="">
             <CardBody className="p-4 text-center">
                 <div
                     className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-2 fw-semibold"
@@ -63,6 +74,14 @@ function AccountPage() {
                 </Button>
             </CardBody>
         </Card>
+        <ClaimsList
+            title="My claims"
+            claims={data}
+            isPending={isPending}
+            error={error}
+            emptyMessage="You haven't created any claims yet."
+        />
+        </>
     );
 }
 

@@ -1,27 +1,25 @@
-import { useQuery } from '@tanstack/react-query';
-import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, CLAIM_CATEGORY_LABELS} from "../types/Claim.ts";
+import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, CLAIM_CATEGORY_LABELS, type Claim} from "../types/Claim.ts";
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row, Spinner } from 'reactstrap';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
-import { fetchClaims } from '../api/claims.ts';
 
 type StatusFilter = ClaimStatus | "";
 type CategoryFilter = ClaimCategory | ""
 
-export function ClaimsList() {
+type ClaimsListProps = {
+    title: string;
+    claims: Claim[] | undefined;
+    isPending: boolean;
+    error?: Error | null;
+    emptyMessage?: string;
+};
 
-    useClaimsLiveUpdates();
+export function ClaimsList({ title, claims, isPending, error, emptyMessage = "There are no claims at the moment." }: ClaimsListProps) {
 
     const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
     const [category, setCategory] = useState<CategoryFilter>("");
     const [query, setQuery] = useState("");
-
-    const { data: claims, isPending, isError, error } = useQuery({
-        queryKey: ['claims'],
-        queryFn: fetchClaims,
-    });
 
     useEffect(() => {
         if (claims?.length === 0) {
@@ -86,7 +84,7 @@ export function ClaimsList() {
         
     <Card className="shadow-sm">
     <CardHeader className="d-flex justify-content-between align-items-center">
-    <h4 className="mb-0">Browse all claims</h4>
+    <h4 className="mb-0">{title}</h4>
     <div className="d-flex gap-3">
       <button onClick={() => {toggleFilters()}} type="button" className="btn p-0 border-0 shadow-none" aria-label="Filter">
         <i className={`bi ${showFilterOptions ? "bi-funnel-fill" : "bi-funnel"}`}></i>
@@ -157,15 +155,15 @@ export function ClaimsList() {
         <Spinner animation="border" role="status" size="sm" className="me-2" />
         Loading Claims...
       </CardBody>
-    ) : isError ? (
+    ) : error ? (
       <CardBody className="text-center text-muted">
         <i className="bi bi-exclamation-triangle fs-1 d-block mb-2" />
         Error: {error.message}
       </CardBody>
-    ) : claims.length === 0 ? (
+    ) : claims?.length === 0 ? (
       <CardBody className="text-center text-muted">
         <i className="bi bi-inbox fs-1 d-block mb-2" />
-        There are no claims at the moment.
+        {emptyMessage}
       </CardBody>
     ) : (
       <ListGroup flush>
