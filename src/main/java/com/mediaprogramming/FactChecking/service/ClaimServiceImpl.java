@@ -54,9 +54,14 @@ public class ClaimServiceImpl implements ClaimService {
         return repository.findById(id);
     }
 
-    @Override
+    @Transactional
     public List<Claim> findAll() {
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
+    }
+
+    @Transactional
+    public List<Claim> findByAuthor(String username) {
+        return repository.findByAuthorUsernameOrderByIdDesc(username);
     }
 
     @Override

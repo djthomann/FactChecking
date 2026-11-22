@@ -1,5 +1,6 @@
 package com.mediaprogramming.FactChecking.controller;
 
+import com.mediaprogramming.FactChecking.model.Claim;
 import com.mediaprogramming.FactChecking.model.ClaimCategory;
 import com.mediaprogramming.FactChecking.service.ClaimService;
 import jakarta.validation.Valid;
@@ -27,11 +28,13 @@ public class ClaimController {
         this.claimSseBroadcaster = claimSseBroadcaster;
     }
 
-    @GetMapping("")
-    public List<ClaimResponse> getAll() {
-        return service.findAll().stream()
-                .map(ClaimResponse::from)
-                .toList();
+    @GetMapping
+    public List<ClaimResponse> getClaims(@RequestParam(required = false) String author) {
+        List<Claim> claims = author == null
+                ? service.findAll()
+                : service.findByAuthor(author);
+
+        return claims.stream().map(ClaimResponse::from).toList();
     }
 
     @GetMapping("/categories")
