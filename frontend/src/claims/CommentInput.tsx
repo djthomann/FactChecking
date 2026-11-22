@@ -1,18 +1,7 @@
-import axios from "axios";
-import { useState, type SubmitEvent } from "react";
-import { Button, Card, CardBody, Form, Input } from "reactstrap";
-import type { CreateCommentRequest } from "../types/Claim";
+import { useState } from "react";
+import { Button, Form, Input } from "reactstrap";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-type CreateCommentVariables = {
-    claimId: number;
-    request: Omit<CreateCommentRequest, "id">;
-};
-
-const createComment = async ({ claimId, request }: CreateCommentVariables): Promise<Comment> => {
-    const response = await axios.post<Comment>(`/api/claims/${claimId}/comments`, request);
-    return response.data;
-};
+import { createComment } from "../api/comments";
 
 function CommentInput({ claimId }: { claimId: number }) {
 
@@ -20,18 +9,18 @@ function CommentInput({ claimId }: { claimId: number }) {
     const queryClient = useQueryClient();
 
     const addCommentMutation = useMutation({
-        mutationFn: createComment,
+        mutationFn: (text: string) => createComment(claimId, { text }),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["claims"] });
+            queryClient.invalidateQueries({ queryKey: ["claims", claimId, "comments"] });
             setNewComment("");
         },
     });
 
-    const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const text = newComment.trim();
         if (!text) return;
-        addCommentMutation.mutate({ claimId, request: { text } });
+        addCommentMutation.mutate(text);
     };
 
     return (

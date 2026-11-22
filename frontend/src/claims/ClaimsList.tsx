@@ -1,18 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, type Claim, CLAIM_CATEGORY_LABELS} from "../types/Claim.ts";
+import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, CLAIM_CATEGORY_LABELS} from "../types/Claim.ts";
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row, Spinner } from 'reactstrap';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useClaimsLiveUpdates } from '../hooks/useClaimsLiveUpdates.tsx';
+import { fetchClaims } from '../api/claims.ts';
 
 type StatusFilter = ClaimStatus | "";
 type CategoryFilter = ClaimCategory | ""
-
-const fetchClaims = async (): Promise<Claim[]> => {
-    const response = await axios.get<Claim[]>('/api/claims');
-    return response.data;
-};
 
 export function ClaimsList() {
 

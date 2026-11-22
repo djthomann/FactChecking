@@ -1,21 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { Badge, Card, CardBody, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, Spinner, UncontrolledDropdown } from "reactstrap";
-import type { Comment } from "../types/Claim";
+import { Badge, Card, CardBody, CardHeader, ListGroup, ListGroupItem, Spinner } from "reactstrap";
 import OptionsMenu from "../components/OptionsMenu";
 import { useMe } from "../hooks/useMe";
-
-const fetchComments = async (claimId: number): Promise<Comment[]> => {
-    const response = await axios.get<Comment[]>(`/api/claims/${claimId}/comments`);
-
-    console.log(response);
-
-    return response.data;
-};
-
-const deleteComment = async (commentId: number): Promise<void> => {
-    await axios.delete(`/api/comments/${commentId}`);
-};
+import { deleteComment, fetchComments } from "../api/comments";
 
 function CommentList({ claimId }: { claimId: number }) {
 

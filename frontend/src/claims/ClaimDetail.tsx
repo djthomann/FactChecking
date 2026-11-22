@@ -1,48 +1,13 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {type Claim, CLAIM_CATEGORY_LABELS, ClaimStatus} from "../types/Claim";
-import axios from 'axios';
+import {CLAIM_CATEGORY_LABELS, ClaimStatus} from "../types/Claim";
 import {Link, useNavigate, useParams } from 'react-router-dom';
-import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label, Spinner} from "reactstrap";
+import {Badge, Button, Card, CardBody, CardHeader, Col, FormFeedback, FormGroup, Input, InputGroup, Label } from "reactstrap";
 import { useEffect, useState } from "react";
 import CommentList from "./CommentList";
 import CommentInput from "./CommentInput";
 import { useMe } from "../hooks/useMe";
 import OptionsMenu from "../components/OptionsMenu";
-
-const fetchClaim = async (id: number): Promise<Claim> => {
-    const response = await axios.get<Claim>(`/api/claims/${id}`);
-
-    console.log(response.data)
-
-    return response.data;
-};
-
-const getServerErrorMessage = (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-        switch (error.response?.status) {
-            case 400: return "The server rejected this URL.";
-            case 401: return "Please log in again.";
-            case 403: return "Only the author can change the URL.";
-            case 404: return "This claim no longer exists.";
-        }
-    }
-    return "Saving failed. Please try again.";
-};
-
-const patchClaim = async (id: number, newStatus: ClaimStatus): Promise<Claim> => {
-    const response = await axios.patch<Claim>(`/api/claims/${id}/status`, { status: newStatus });
-    return response.data;
-};
-
-const patchClaimUrl = async (id: number, url: string): Promise<Claim> => {
-  const response = await axios.patch<Claim>(`/api/claims/${id}/url`, { url });
-  return response.data;
-};
-
-const deleteClaim = async(id: number) => {
-    const response = await axios.delete<Claim>(`/api/claims/${id}`);
-    return response.data;
-}
+import { deleteClaim, fetchClaim, getUrlErrorMessage, patchClaimStatus, patchClaimUrl } from "../api/claims";
 
 function ClaimDetail() {
 
@@ -55,8 +20,6 @@ function ClaimDetail() {
             queryKey: ['claim', claimId],
             queryFn: () => fetchClaim(claimId),
         });
-
-    
 
     const isOwnClaim = !!me && me.username === claim?.authorUsername;
 
@@ -97,7 +60,7 @@ function ClaimDetail() {
     }, [urlSuccess, reset]);
 
     const { mutate: updateStatus, isPending: urlPatchPending } = useMutation({
-        mutationFn: (newStatus: ClaimStatus) => patchClaim(claimId, newStatus),
+        mutationFn: (newStatus: ClaimStatus) => patchClaimStatus(claimId, newStatus),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["claim", claimId] });
         },
@@ -234,7 +197,7 @@ function ClaimDetail() {
                                             
                                             {urlError && (
                                                 <FormFeedback className="d-block">
-                                                    {getServerErrorMessage(urlErrorMessage)}
+                                                    {getUrlErrorMessage(urlErrorMessage)}
                                                 </FormFeedback>
                                             )}
                                         </InputGroup>

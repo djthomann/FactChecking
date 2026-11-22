@@ -14,12 +14,6 @@ export interface Comment {
   text: string;
 }
 
-export interface CreateClaimRequest {
-  title: string;
-  text: string,
-  category: ClaimCategory
-}
-
 export interface CreateCommentRequest {
   text: string
 }
