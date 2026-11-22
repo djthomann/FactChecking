@@ -3,6 +3,7 @@ import axios from 'axios';
 import {CATEGORY_DEFINITIONS, type Claim, type ClaimCategory, type CreateClaimRequest} from "../types/Claim.ts";
 import {useState, type SubmitEvent} from "react";
 import { Button, Card, CardHeader, Col, Form, FormGroup, Input, InputGroup, Label, Row } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
 
 const createClient = async (request: Omit<CreateClaimRequest, 'id'>): Promise<Claim> => {
     const response = await axios.post<Claim>('/api/claims', request);
@@ -10,6 +11,8 @@ const createClient = async (request: Omit<CreateClaimRequest, 'id'>): Promise<Cl
 };
 
 function ClaimsForm() {
+
+     const navigate = useNavigate();
 
     const [title, setTitle] = useState("");
     const [text, setText] = useState("");
@@ -24,6 +27,7 @@ function ClaimsForm() {
             queryClient.invalidateQueries({ queryKey: ['claims'] });
             setTitle("")
             setText("")
+            navigate('/browse');
         },
     });
 

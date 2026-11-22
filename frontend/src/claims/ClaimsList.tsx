@@ -18,7 +18,7 @@ export function ClaimsList() {
 
     useClaimsLiveUpdates();
 
-    const [showFilterOptions, setShowFilterOptions] = useState(false);
+    const [showFilterOptions, setShowFilterOptions] = useState(true);
     const [status, setStatus] = useState<StatusFilter>("");
     const [category, setCategory] = useState<CategoryFilter>("");
     const [query, setQuery] = useState("");

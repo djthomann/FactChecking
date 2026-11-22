@@ -7,8 +7,11 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import { useMe } from '../hooks/useMe';
 
 function ClaimNavbar({ theme, toggleTheme }: { theme: string, toggleTheme: () => void }) {
+
+    const { data: me, isPending } = useMe();
 
     return (
         <header className="bg-brand" data-bs-theme="dark">
@@ -16,8 +19,22 @@ function ClaimNavbar({ theme, toggleTheme }: { theme: string, toggleTheme: () =>
                 <NavbarBrand tag={Link} to="/">Share your Claim!</NavbarBrand>
                 <Nav className="ms-auto" navbar>
                     <NavItem>
-                        <NavLink tag={Link} to="/claims">Claims</NavLink>
+                        <NavLink tag={Link} to="/browse">Browse</NavLink>
                     </NavItem>
+                    {me ? (
+                        <>
+                            <NavItem>
+                                <NavLink tag={Link} to="/contribute">Contribute</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink tag={Link} to="/account">Account</NavLink>
+                            </NavItem>
+                        </>
+                        ) : (
+                        <NavItem>
+                            <NavLink tag={Link} to="/login">Login</NavLink>
+                        </NavItem>
+                        )}
                     <NavItem>
                         <Button
                                 color="link"

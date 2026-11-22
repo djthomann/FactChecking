@@ -91,7 +91,7 @@ function ClaimDetail() {
                 queryKey: ['claims']
             });
 
-            navigate('/claims');
+            navigate('/browse');
         },
     })
 
