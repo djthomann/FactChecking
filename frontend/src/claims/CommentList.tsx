@@ -3,6 +3,7 @@ import { Badge, Card, CardBody, CardHeader, ListGroup, ListGroupItem, Spinner } 
 import OptionsMenu from "../components/OptionsMenu";
 import { useMe } from "../hooks/useMe";
 import { deleteComment, fetchComments } from "../api/comments";
+import UserBadge from "../components/UserBadge";
 
 function CommentList({ claimId }: { claimId: number }) {
 
@@ -48,7 +49,7 @@ function CommentList({ claimId }: { claimId: number }) {
                     <ListGroupItem key={comment.id}>
                         <div className="d-flex justify-content-between align-items-center mb-1">
                             <div className="fw-semibold small text-muted">
-                                <Badge color="light" className="text-dark border"><i className="bi bi-person me-1"></i>{comment.authorUsername}</Badge>
+                                <UserBadge username={comment.authorUsername}></UserBadge>
                             </div>
 
                             {!!me && me.username === comment?.authorUsername && (

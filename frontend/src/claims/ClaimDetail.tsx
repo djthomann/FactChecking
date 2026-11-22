@@ -8,6 +8,7 @@ import CommentInput from "./CommentInput";
 import { useMe } from "../hooks/useMe";
 import OptionsMenu from "../components/OptionsMenu";
 import { deleteClaim, fetchClaim, getUrlErrorMessage, patchClaimStatus, patchClaimUrl } from "../api/claims";
+import UserBadge from "../components/UserBadge";
 
 function ClaimDetail() {
 
@@ -124,9 +125,7 @@ function ClaimDetail() {
                     </div>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
                         <Badge color="light" className="text-dark border"># {id}</Badge>
-                        <Badge color="light" className="text-dark border">
-                            <i className="bi bi-person me-1"></i>{claim.authorUsername}
-                        </Badge>
+                        <UserBadge username={claim.authorUsername}></UserBadge>
                         <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>
                         <Badge
                             color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"}
