@@ -29,20 +29,20 @@ public class CommentController {
 
     @PostMapping("/claims/{claimId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<CommentResponse> newComment(
+    public CommentResponse newComment(
             @PathVariable Long claimId,
             @Valid @RequestBody CreateCommentRequest request,
             @AuthenticationPrincipal UserDetails user) {
-        return commentService.create(claimId, request.text(), user.getUsername())
-                .map(CommentResponse::from)
-                .map(c -> ResponseEntity.status(HttpStatus.CREATED).body(c))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return CommentResponse.from(commentService.createComment(claimId, request.text(), user.getUsername()));
     }
 
     @DeleteMapping("/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Long commentId) {
-        commentService.delete(commentId);
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails user) {
+        commentService.deleteComment(commentId, user.getUsername());
+        return ResponseEntity.ok().build();
     }
 
 }

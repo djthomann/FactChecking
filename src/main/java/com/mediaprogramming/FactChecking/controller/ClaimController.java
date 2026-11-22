@@ -56,28 +56,28 @@ public class ClaimController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClaimResponse createClaim(@RequestBody @Valid CreateClaimRequest request,
                                 @AuthenticationPrincipal UserDetails user) {
-        return service.createClaim(request, user.getUsername());
+        return ClaimResponse.from(service.createClaim(request, user.getUsername()));
     }
 
     @PatchMapping("/{id}/url")
-    public ResponseEntity<ClaimResponse> updateClaimUrl(@PathVariable long id, @Valid @RequestBody UpdateUrlRequest request) {
-        return service.updateUrl(id, request)
-                .map(ClaimResponse::from)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ClaimResponse updateClaimUrl(
+            @PathVariable long id,
+            @Valid @RequestBody UpdateUrlRequest request,
+            @AuthenticationPrincipal UserDetails user) {
+        return ClaimResponse.from(service.updateUrl(id, request, user.getUsername()));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ClaimResponse> updateClaimStatus(@PathVariable long id, @RequestBody UpdateStatusRequest request) {
-        return service.updateStatus(id, request)
-                .map(ClaimResponse::from)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ClaimResponse updateClaimStatus(
+            @PathVariable long id,
+            @RequestBody UpdateStatusRequest request,
+            @AuthenticationPrincipal UserDetails user) {
+        return ClaimResponse.from(service.updateStatus(id, request, user.getUsername()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClaim(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> deleteClaim(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
+        service.deleteClaim(id, user.getUsername());
         return ResponseEntity.ok().build();
     }
 

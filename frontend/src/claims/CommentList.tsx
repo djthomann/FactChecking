@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Badge, Card, CardBody, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, Spinner, UncontrolledDropdown } from "reactstrap";
 import type { Comment } from "../types/Claim";
+import OptionsMenu from "../components/OptionsMenu";
+import { useMe } from "../hooks/useMe";
 
 const fetchComments = async (claimId: number): Promise<Comment[]> => {
     const response = await axios.get<Comment[]>(`/api/claims/${claimId}/comments`);
@@ -18,6 +20,7 @@ const deleteComment = async (commentId: number): Promise<void> => {
 function CommentList({ claimId }: { claimId: number }) {
 
     const queryClient = useQueryClient();
+    const { data: me, isPending: isMePending } = useMe();
 
     const { data: comments, isPending, isError, error } = useQuery({
         queryKey: ['claims', claimId, "comments"],
@@ -61,34 +64,19 @@ function CommentList({ claimId }: { claimId: number }) {
                                 <Badge color="light" className="text-dark border"><i className="bi bi-person me-1"></i>{comment.authorUsername}</Badge>
                             </div>
 
-                            <UncontrolledDropdown>
-                                <DropdownToggle
-                                    color="link"
-                                    size="sm"
-                                    className="p-0 text-muted"
-                                    aria-label="Optionen"
-                                >
-                                    <i className="bi bi-three-dots-vertical"></i>
-                                </DropdownToggle>
-                                <DropdownMenu end>
-                                    {/*} TODO
-                                    <DropdownItem
-                                        onClick={() => {}}
-                                    >
-                                        <i className="bi bi-trash me-2"></i>
-                                        Edit
-                                    </DropdownItem>*/}
-                                    <DropdownItem
-                                        className="text-danger"
-                                        onClick={() => {
-                                            deleteMutation.mutate(comment.id);
-                                        }}
-                                    >
-                                        <i className="bi bi-trash me-2"></i>
-                                        Delete
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
+                            {!!me && me.username === comment?.authorUsername && (
+                                <OptionsMenu
+                                items={[
+                                    {
+                                        label: "Delete",
+                                        icon: "bi-trash",
+                                        danger: true,
+                                        disabled: deleteMutation.isPending,
+                                        onClick: () => deleteMutation.mutate(comment.id),
+                                    },
+                                ]}
+                            />
+                            )}
                         </div>
                         <div style={{ whiteSpace: "pre-wrap" }}>{comment.text}</div>
                     </ListGroupItem>

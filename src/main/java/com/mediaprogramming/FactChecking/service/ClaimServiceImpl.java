@@ -34,7 +34,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Transactional
-    public ClaimResponse createClaim(CreateClaimRequest request, String username) {
+    public Claim createClaim(CreateClaimRequest request, String username) {
         AppUser author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
@@ -46,7 +46,7 @@ public class ClaimServiceImpl implements ClaimService {
 
         events.publishEvent(new ClaimsChangedEvent());
 
-        return ClaimResponse.from(repository.save(claim));
+        return repository.save(claim);
     }
 
     @Override
@@ -61,29 +61,36 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     @Transactional
-    public Optional<Claim> updateStatus(Long id, UpdateStatusRequest request) {
-        return findById(id)
-                .map(claim -> {
-                    claim.setStatus(request.status());
-                    events.publishEvent(new ClaimsChangedEvent());
-                    return claim;
-                });
+    public Claim updateStatus(Long id, UpdateStatusRequest request, String username) {
+        Claim claim = getOwnedClaim(id, username);
+        claim.setStatus(request.status());
+        events.publishEvent(new ClaimsChangedEvent());
+        return claim;
     }
 
     @Override
     @Transactional
-    public Optional<Claim> updateUrl(Long id, UpdateUrlRequest request) {
-        return findById(id)
-                .map(claim -> {
-                    claim.setUrl(request.url());
-                    events.publishEvent(new ClaimsChangedEvent());
-                    return claim;
-                });
+    public Claim updateUrl(Long id, UpdateUrlRequest request, String username) {
+        Claim claim = getOwnedClaim(id, username);
+        claim.setUrl(request.url());
+        events.publishEvent(new ClaimsChangedEvent());
+        return claim;
     }
 
-    @Override
-    public void delete(Long id) {
+    @Transactional
+    public void deleteClaim(Long claimId, String username) {
+        Claim claim = getOwnedClaim(claimId, username);
         events.publishEvent(new ClaimsChangedEvent());
-        repository.deleteById(id);
+        repository.delete(claim);
+    }
+
+    private Claim getOwnedClaim(Long claimId, String username) {
+        Claim claim = repository.findById(claimId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!claim.getAuthor().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        return claim;
     }
 }

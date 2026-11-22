@@ -1,6 +1,8 @@
 package com.mediaprogramming.FactChecking.service;
 
+import com.mediaprogramming.FactChecking.controller.CreateClaimRequest;
 import com.mediaprogramming.FactChecking.model.AppUser;
+import com.mediaprogramming.FactChecking.model.Claim;
 import com.mediaprogramming.FactChecking.model.Comment;
 import com.mediaprogramming.FactChecking.repository.AppUserRepository;
 import com.mediaprogramming.FactChecking.repository.ClaimRepository;
@@ -31,13 +33,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Optional<Comment> create(Long claimId, String text, String username) {
-
+    public Comment createComment(Long claimId, String text, String username) {
         AppUser author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
-        return claimRepository.findById(claimId)
-                .map(claim -> commentRepository.save(new Comment(claim, author, text)));
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return commentRepository.save(new Comment(claim, author, text));
     }
 
     @Override
@@ -51,7 +54,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void delete(Long id) {
-        commentRepository.deleteById(id);
+    public void deleteComment(Long id, String username) {
+        Comment comment = getOwnedComment(id, username);
+        // TODO() SSE for Comments
+        commentRepository.delete(comment);
+    }
+
+    private Comment getOwnedComment(Long commentId, String username) {
+       Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!comment.getAuthor().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        return comment;
     }
 }

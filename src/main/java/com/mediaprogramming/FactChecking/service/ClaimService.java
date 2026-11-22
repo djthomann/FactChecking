@@ -12,16 +12,16 @@ import java.util.Optional;
 
 public interface ClaimService {
 
-    public ClaimResponse createClaim(CreateClaimRequest request, String username);
+    Claim createClaim(CreateClaimRequest request, String username);
 
     Optional<Claim> findById(Long id);
 
     List<Claim> findAll();
 
-    Optional<Claim> updateStatus(Long id, UpdateStatusRequest request);
+    Claim updateStatus(Long id, UpdateStatusRequest request, String username);
 
-    Optional<Claim> updateUrl(Long id, UpdateUrlRequest request);
+    Claim updateUrl(Long id, UpdateUrlRequest request, String username);
 
-    void delete(Long id);
+    void deleteClaim(Long claimId, String username);
 
 }

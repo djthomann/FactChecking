@@ -7,12 +7,12 @@ import java.util.Optional;
 
 public interface CommentService {
 
-    Optional<Comment> create(Long claimId, String text, String username);
+    Comment createComment(Long claimId, String text, String username);
 
     List<Comment> findAll();
 
     List<Comment> findByClaimId(Long claimId);
 
-    void delete(Long id);
+    void deleteComment(Long id, String username);
 
 }
