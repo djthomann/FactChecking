@@ -1,8 +1,9 @@
 import axios from "axios";
-import type { Comment } from "../types/Claim";
+import type { Comment, CommentStance } from "../types/Claim";
 
 export interface CreateCommentRequest {
     text: string;
+    stance: CommentStance;
 }
 
 export const fetchComments = async (claimId: number): Promise<Comment[]> =>

@@ -4,6 +4,7 @@ import com.mediaprogramming.FactChecking.controller.CreateClaimRequest;
 import com.mediaprogramming.FactChecking.model.AppUser;
 import com.mediaprogramming.FactChecking.model.Claim;
 import com.mediaprogramming.FactChecking.model.Comment;
+import com.mediaprogramming.FactChecking.model.CommentStance;
 import com.mediaprogramming.FactChecking.repository.AppUserRepository;
 import com.mediaprogramming.FactChecking.repository.ClaimRepository;
 import com.mediaprogramming.FactChecking.repository.CommentRepository;
@@ -33,14 +34,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment createComment(Long claimId, String text, String username) {
+    public Comment createComment(Long claimId, String text, String username, CommentStance stance) {
         AppUser author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return commentRepository.save(new Comment(claim, author, text));
+        return commentRepository.save(new Comment(claim, author, text, stance));
     }
 
     @Override

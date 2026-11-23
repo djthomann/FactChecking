@@ -33,7 +33,7 @@ public class CommentController {
             @PathVariable Long claimId,
             @Valid @RequestBody CreateCommentRequest request,
             @AuthenticationPrincipal UserDetails user) {
-        return CommentResponse.from(commentService.createComment(claimId, request.text(), user.getUsername()));
+        return CommentResponse.from(commentService.createComment(claimId, request.text(), user.getUsername(), request.stance()));
     }
 
     @DeleteMapping("/comments/{commentId}")

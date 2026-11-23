@@ -19,13 +19,18 @@ public class Comment {
     @JoinColumn(name = "claim_id")
     private Claim claim;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CommentStance stance;
+
     public Comment() {
     }
 
-    public Comment(Claim claim, AppUser author, String text) {
+    public Comment(Claim claim, AppUser author, String text, CommentStance stance) {
         this.claim = claim;
         this.author = author;
         this.text = text;
+        this.stance = stance;
     }
 
     public String getText() {
@@ -58,5 +63,13 @@ public class Comment {
 
     public void setAuthor(AppUser author) {
         this.author = author;
+    }
+
+    public CommentStance getStance() {
+        return stance;
+    }
+
+    public void setStance(CommentStance stance) {
+        this.stance = stance;
     }
 }
