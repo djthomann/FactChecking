@@ -8,7 +8,8 @@ import CommentInput from "./CommentInput";
 import { useMe } from "../hooks/useMe";
 import OptionsMenu from "../components/OptionsMenu";
 import { deleteClaim, fetchClaim, getUrlErrorMessage, patchClaimStatus, patchClaimUrl } from "../api/claims";
-import UserBadge from "../components/UserBadge";
+import UserBadge from "../components/badges/UserBadge";
+import StatusBadge from "../components/badges/StatusBadge";
 
 function ClaimDetail() {
 
@@ -127,13 +128,7 @@ function ClaimDetail() {
                         <Badge color="light" className="text-dark border"># {id}</Badge>
                         <UserBadge username={claim.authorUsername}></UserBadge>
                         <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>
-                        <Badge
-                            color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"}
-                            className="border"
-                            style={{ minWidth: "6rem" }}
-                        >
-                            {claim.status}
-                        </Badge>
+                        <StatusBadge status={claim.status}></StatusBadge>
 
                         {isOwnClaim && <div className="ms-auto">
                             <OptionsMenu

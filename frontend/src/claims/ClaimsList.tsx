@@ -2,6 +2,7 @@ import { CATEGORY_DEFINITIONS, type ClaimCategory, ClaimStatus, CLAIM_CATEGORY_L
 import { Badge, Card, CardBody, CardHeader, Col, Collapse, Input, Label, ListGroup, ListGroupItem, Row, Spinner } from 'reactstrap';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import StatusBadge from "../components/badges/StatusBadge.tsx";
 
 type StatusFilter = ClaimStatus | "";
 type CategoryFilter = ClaimCategory | ""
@@ -182,13 +183,7 @@ export function ClaimsList({ title, claims, isPending, error, emptyMessage = "Th
 
             <div className="d-flex gap-2">
               <Badge className="border">{CLAIM_CATEGORY_LABELS[claim.category]}</Badge>
-              <Badge 
-                  color={claim.status === ClaimStatus.UNVERIFIED ? "danger" : "success"} 
-                  className="border" 
-                  style={{ minWidth: '6rem' }}
-              >
-                  {claim.status}
-              </Badge>
+              <StatusBadge status={claim.status}></StatusBadge>
             </div>
           </ListGroupItem>
         ))}
